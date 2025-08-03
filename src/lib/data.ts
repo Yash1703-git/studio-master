@@ -1,4 +1,4 @@
-import type { Product, Booking, ProductRequest } from "@/types";
+import type { Product, CustomerRequest } from "@/types";
 
 export const products: Product[] = [
   {
@@ -67,61 +67,37 @@ export const products: Product[] = [
   },
 ];
 
-export const bookings: Booking[] = [
+export const customerRequests: CustomerRequest[] = [
   {
     id: 101,
     customerName: "Alice's Farm",
     productName: "Organic Cow Milk",
     quantity: 50,
-    totalPrice: 199.50,
-    status: "Delivered",
+    status: "Fulfilled",
+    date: "2024-07-28",
   },
   {
     id: 102,
     customerName: "Bob's Barn",
     productName: "Artisanal Goat Cheese",
     quantity: 20,
-    totalPrice: 170.00,
-    status: "Processing",
+    status: "Pending",
+    date: "2024-07-27",
   },
   {
     id: 103,
     customerName: "Charlie's Ranch",
     productName: "Sheep's Milk Yogurt",
     quantity: 30,
-    totalPrice: 157.50,
-    status: "Delivered",
+    status: "Fulfilled",
+    date: "2024-07-26",
   },
     {
     id: 104,
     customerName: "Alice's Farm",
     productName: "Buffalo Milk Butter",
     quantity: 15,
-    totalPrice: 90.00,
-    status: "Shipped",
-  },
-];
-
-export const productRequests: ProductRequest[] = [
-  {
-    id: 1,
-    productName: "Organic A2 Ghee",
-    description: "Requested by multiple customers for its health benefits.",
-    dateRequested: "2024-05-15",
     status: "Pending",
-  },
-  {
-    id: 2,
-    productName: "Lactose-Free Milk",
-    description: "For customers with lactose intolerance.",
-    dateRequested: "2024-05-20",
-    status: "Sourcing",
-  },
-   {
-    id: 3,
-    productName: "Blue Cheese",
-    description: "",
-    dateRequested: "2024-05-28",
-    status: "Pending",
+    date: "2024-07-25",
   },
 ];

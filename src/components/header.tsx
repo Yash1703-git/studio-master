@@ -21,7 +21,6 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/advisor", label: "AI Advisor" },
   { href: "/dashboard", label: "Dashboard" },
 ];
 

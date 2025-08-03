@@ -19,12 +19,6 @@ export function Footer() {
             Products
           </Link>
           <Link
-            href="/advisor"
-            className="text-sm font-medium text-muted-foreground hover:text-primary"
-          >
-            AI Advisor
-          </Link>
-          <Link
             href="/dashboard"
             className="text-sm font-medium text-muted-foreground hover:text-primary"
           >
