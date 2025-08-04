@@ -27,12 +27,14 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response: any) => {
-        // reCAPTCHA solved, allow signInWithPhoneNumber.
-      }
-    });
+    if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response: any) => {
+                // reCAPTCHA solved, allow signInWithPhoneNumber.
+            }
+        });
+    }
   }, []);
 
   const handleSendOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -54,12 +56,16 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+     if (!window.confirmationResult) {
+        toast({ variant: "destructive", title: "Error", description: "Please verify your phone number first." });
+        return;
+    }
     try {
-      await window.confirmationResult?.confirm(otp);
+      await window.confirmationResult.confirm(otp);
       toast({ title: "Success", description: "Logged in successfully" });
       router.push("/");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message });
+       toast({ variant: "destructive", title: "Error", description: "Invalid OTP or user may not be registered." });
     }
   };
 
@@ -89,12 +95,13 @@ export default function LoginPage() {
               </div>
             ) : (
               <div>
-                <Label htmlFor="otp">OTP</Label>
+                <Label htmlFor="otp">Enter OTP</Label>
                 <Input
                   id="otp"
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter 6-digit OTP"
                   required
                 />
               </div>

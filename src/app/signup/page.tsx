@@ -30,12 +30,14 @@ export default function SignupPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        }
-      });
+    if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response: any) => {
+              // reCAPTCHA solved, allow signInWithPhoneNumber.
+            }
+        });
+    }
   }, []);
 
   const handleSendOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -57,8 +59,12 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!window.confirmationResult) {
+        toast({ variant: "destructive", title: "Error", description: "Please verify your phone number first." });
+        return;
+    }
     try {
-      const userCredential = await window.confirmationResult?.confirm(otp);
+      const userCredential = await window.confirmationResult.confirm(otp);
       if (userCredential) {
         const user = userCredential.user;
         await setDoc(doc(db, "users", user.uid), {
@@ -69,7 +75,7 @@ export default function SignupPage() {
         router.push("/login");
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error", description: error.message });
+      toast({ variant: "destructive", title: "Error", description: "Invalid OTP or something went wrong." });
     }
   };
 
@@ -99,12 +105,13 @@ export default function SignupPage() {
               </div>
             ) : (
               <div>
-                <Label htmlFor="otp">OTP</Label>
+                <Label htmlFor="otp">Enter OTP</Label>
                 <Input
                   id="otp"
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter 6-digit OTP"
                   required
                 />
               </div>
