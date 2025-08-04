@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -16,27 +18,29 @@ import {
 import { customerRequests } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { ListOrdered } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
 
 export default function DashboardPage() {
+  const { t, p } = useLanguage();
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight font-headline">Admin Dashboard</h1>
-        <p className="text-muted-foreground">An overview of customer product requests.</p>
+        <h1 className="text-3xl font-bold tracking-tight font-headline">{t('adminDashboard')}</h1>
+        <p className="text-muted-foreground">{t('adminDashboardSubtitle')}</p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Requests
+              {t('totalRequests')}
             </CardTitle>
             <ListOrdered className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{customerRequests.length}</div>
             <p className="text-xs text-muted-foreground">
-              From all customers
+              {t('fromAllCustomers')}
             </p>
           </CardContent>
         </Card>
@@ -44,20 +48,20 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Customer Requests</CardTitle>
+          <CardTitle>{t('customerRequests')}</CardTitle>
           <CardDescription>
-            A list of recent product requests from customers.
+            {t('customerRequestsSubtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Customer</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Quantity</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t('customer')}</TableHead>
+                <TableHead>{t('product')}</TableHead>
+                <TableHead className="text-right">{t('quantity')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <TableHead>{t('date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,11 +70,11 @@ export default function DashboardPage() {
                   <TableCell className="font-medium">
                     {request.customerName}
                   </TableCell>
-                  <TableCell>{request.productName}</TableCell>
+                  <TableCell>{p(request, 'productName')}</TableCell>
                   <TableCell className="text-right">{request.quantity}</TableCell>
                   <TableCell>
                     <Badge variant={request.status === 'Fulfilled' ? 'default' : 'secondary'} className={request.status === 'Fulfilled' ? 'bg-accent text-accent-foreground' : ''}>
-                      {request.status}
+                      {t(request.status.toLowerCase())}
                     </Badge>
                   </TableCell>
                   <TableCell>{request.date}</TableCell>

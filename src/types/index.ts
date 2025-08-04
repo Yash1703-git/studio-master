@@ -5,6 +5,12 @@ export interface Product {
   description: string;
   imageUrl: string;
   aiHint: string;
+  translations: {
+    [key: string]: {
+      name: string;
+      description: string;
+    }
+  }
 }
 
 export interface CustomerRequest {
@@ -14,4 +20,15 @@ export interface CustomerRequest {
   quantity: number;
   status: "Pending" | "Fulfilled" | "Cancelled";
   date: string;
+  translations: {
+    [key: string]: {
+      productName: string;
+    }
+  }
+}
+
+export type ProductTranslations = {
+  [key: string]: {
+    [key: string]: string;
+  }
 }

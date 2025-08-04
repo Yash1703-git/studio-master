@@ -18,17 +18,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState } from "react";
+import { useLanguage } from "@/context/language-context";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/", labelKey: "home" },
+  { href: "/dashboard", labelKey: "dashboard" },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
-  const NavLink = ({ href, label }: { href: string; label: string }) => (
+  const NavLink = ({ href, labelKey }: { href: string; labelKey: string }) => (
     <Link
       href={href}
       className={cn(
@@ -37,7 +39,7 @@ export function Header() {
       )}
       onClick={() => setIsMobileMenuOpen(false)}
     >
-      {label}
+      {t(labelKey)}
     </Link>
   );
 
@@ -87,8 +89,8 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>English</DropdownMenuItem>
-              <DropdownMenuItem disabled>Marathi</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('en')}>English</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('mr')}>Marathi</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
