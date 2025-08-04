@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -38,5 +39,6 @@ export type ProductTranslations = {
 export interface User {
   uid: string;
   email: string | null;
+  phoneNumber?: string | null;
   role: 'customer' | 'admin';
 }

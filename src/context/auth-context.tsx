@@ -25,10 +25,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          setUser({ uid: firebaseUser.uid, email: firebaseUser.email, ...userDoc.data() } as User);
+          setUser({ uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, ...userDoc.data() } as User);
         } else {
             // Default to customer if no role is set
-            setUser({ uid: firebaseUser.uid, email: firebaseUser.email, role: 'customer' });
+            setUser({ uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, role: 'customer' });
         }
       } else {
         setUser(null);
