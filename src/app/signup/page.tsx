@@ -43,14 +43,15 @@ export default function SignupPage() {
     try {
         const recaptchaVerifier = window.recaptchaVerifier;
         if (recaptchaVerifier) {
-            const confirmationResult = await signInWithPhoneNumber(auth, `+${phoneNumber}`, recaptchaVerifier);
+            const fullPhoneNumber = `+91${phoneNumber}`;
+            const confirmationResult = await signInWithPhoneNumber(auth, fullPhoneNumber, recaptchaVerifier);
             window.confirmationResult = confirmationResult;
             setOtpSent(true);
             toast({ title: "Success", description: "OTP sent successfully" });
         }
     } catch (error: any) {
       console.error(error);
-      toast({ variant: "destructive", title: "Error", description: "Failed to send OTP. Make sure to include the country code and that the reCAPTCHA is working." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to send OTP. Please check the phone number and try again." });
     }
   };
 
@@ -83,13 +84,14 @@ export default function SignupPage() {
           <form onSubmit={handleSignup} className="space-y-4">
             {!otpSent ? (
               <div>
-                <Label htmlFor="phone">Phone Number (e.g., 91xxxxxxxxxx)</Label>
+                <Label htmlFor="phone">10-digit Phone Number</Label>
                 <div className="flex gap-2">
                 <Input
                   id="phone"
                   type="tel"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="xxxxxxxxxx"
                   required
                 />
                 <Button onClick={handleSendOtp}>Send OTP</Button>
