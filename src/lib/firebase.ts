@@ -2,15 +2,14 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getEnv } from "./utils";
 
 const firebaseConfig = {
-  apiKey: getEnv("NEXT_PUBLIC_FIREBASE_API_KEY"),
-  authDomain: getEnv("NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN"),
-  projectId: getEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID"),
-  storageBucket: getEnv("NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET"),
-  messagingSenderId: getEnv("NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID"),
-  appId: getEnv("NEXT_PUBLIC_FIREBASE_APP_ID"),
+  apiKey: "AIzaSyAlmSDc9mhz06DUYahHfkSwpHnCoQvfgFo",
+  authDomain: "dairymix-id63c.firebaseapp.com",
+  projectId: "dairymix-id63c",
+  storageBucket: "dairymix-id63c.firebasestorage.app",
+  messagingSenderId: "843685770616",
+  appId: "1:843685770616:web:d209017d58fd66c717448d",
 };
 
 // Initialize Firebase
