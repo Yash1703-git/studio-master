@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
 import { auth, db } from "@/lib/firebase";
@@ -29,29 +29,28 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+  useEffect(() => {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
         'callback': (response: any) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
         }
       });
-    }
-    return window.recaptchaVerifier;
-  };
+  }, []);
 
   const handleSendOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const recaptchaVerifier = setupRecaptcha();
-      const confirmationResult = await signInWithPhoneNumber(auth, `+${phoneNumber}`, recaptchaVerifier);
-      window.confirmationResult = confirmationResult;
-      setOtpSent(true);
-      toast({ title: "Success", description: "OTP sent successfully" });
+        const recaptchaVerifier = window.recaptchaVerifier;
+        if (recaptchaVerifier) {
+            const confirmationResult = await signInWithPhoneNumber(auth, `+${phoneNumber}`, recaptchaVerifier);
+            window.confirmationResult = confirmationResult;
+            setOtpSent(true);
+            toast({ title: "Success", description: "OTP sent successfully" });
+        }
     } catch (error: any) {
       console.error(error);
-      toast({ variant: "destructive", title: "Error", description: "Failed to send OTP. Make sure to include the country code." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to send OTP. Make sure to include the country code and that the reCAPTCHA is working." });
     }
   };
 
