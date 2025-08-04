@@ -25,10 +25,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          setUser({ uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, ...userDoc.data() } as User);
+          setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-            // Default to customer if no role is set
-            setUser({ uid: firebaseUser.uid, email: firebaseUser.email, phoneNumber: firebaseUser.phoneNumber, role: 'customer' });
+            // This case might happen if the user doc creation fails after signup.
+            // Defaulting to a customer role.
+            setUser({ uid: firebaseUser.uid, name: firebaseUser.displayName || "User", email: firebaseUser.email, role: 'customer' });
         }
       } else {
         setUser(null);
@@ -42,6 +43,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
+    // Optionally, redirect to the login page after logout
+    window.location.href = '/login';
   };
 
   return (

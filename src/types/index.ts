@@ -38,7 +38,7 @@ export type ProductTranslations = {
 
 export interface User {
   uid: string;
+  name: string;
   email: string | null;
-  phoneNumber?: string | null;
   role: 'customer' | 'admin';
 }
