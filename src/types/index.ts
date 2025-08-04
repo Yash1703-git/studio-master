@@ -1,10 +1,12 @@
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   description: string;
   imageUrl: string;
   aiHint: string;
+  type: string;
+  stock: number;
   translations: {
     [key: string]: {
       name: string;
@@ -31,4 +33,10 @@ export type ProductTranslations = {
   [key: string]: {
     [key: string]: string;
   }
+}
+
+export interface User {
+  uid: string;
+  email: string | null;
+  role: 'customer' | 'admin';
 }
