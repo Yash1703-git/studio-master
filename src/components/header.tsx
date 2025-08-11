@@ -20,6 +20,8 @@ import {
 import { useState } from "react";
 import { useLanguage } from "@/context/language-context";
 import { useAuth } from "@/context/auth-context";
+import { useNotifications } from "@/context/notification-context";
+import { Badge } from "./ui/badge";
 
 const navLinks = [
   { href: "/", labelKey: "home" },
@@ -31,6 +33,10 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { user, logout } = useAuth();
+  const { customerNotifications, adminNotifications, clearCustomerNotifications, clearAdminNotifications } = useNotifications();
+
+  const notificationCount = user ? adminNotifications : customerNotifications;
+  const clearNotifications = user ? clearAdminNotifications : clearCustomerNotifications;
 
   const NavLink = ({ href, labelKey }: { href: string; labelKey: string }) => {
     // Hide admin link if not logged in
@@ -88,7 +94,10 @@ export function Header() {
         </div>
         
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="relative" onClick={clearNotifications}>
+            {notificationCount > 0 && (
+              <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0">{notificationCount}</Badge>
+            )}
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
           </Button>

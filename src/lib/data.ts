@@ -1,4 +1,4 @@
-import type { Product, CustomerRequest } from "@/types";
+import type { Product, CustomerRequest, SpecialRequest } from "@/types";
 
 export let products: Product[] = [
     {
@@ -98,7 +98,7 @@ export const deleteProduct = async (productId: string): Promise<void> => {
 }
 
 
-export const customerRequests: CustomerRequest[] = [
+export let customerRequests: CustomerRequest[] = [
   {
     id: 101,
     customerName: "Alice's Farm",
@@ -152,3 +152,14 @@ export const customerRequests: CustomerRequest[] = [
     }
   },
 ];
+
+export let specialRequests: SpecialRequest[] = [];
+
+export const getSpecialRequests = async (): Promise<SpecialRequest[]> => {
+  return new Promise(resolve => setTimeout(() => resolve(specialRequests), 100));
+}
+
+export const addSpecialRequest = async (request: SpecialRequest): Promise<SpecialRequest> => {
+  specialRequests.push(request);
+  return new Promise(resolve => setTimeout(() => resolve(request), 100));
+}

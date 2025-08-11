@@ -3,33 +3,53 @@
 import { useEffect, useState, useCallback } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useLanguage } from "@/context/language-context";
-import type { Product } from "@/types";
+import type { Product, SpecialRequest } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getProducts } from "@/lib/data";
+import { getProducts, addSpecialRequest } from "@/lib/data";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Search, Send } from "lucide-react";
+import { useNotifications } from "@/context/notification-context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const { t, p } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const { addCustomerNotification, addAdminNotification } = useNotifications();
+  const [requestDetails, setRequestDetails] = useState({ name: "", details: "" });
+  const { toast } = useToast();
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
+      const previousProductIds = new Set(products.map(p => p.id));
       const productsData = await getProducts();
+      
+      if (previousProductIds.size > 0) {
+        productsData.forEach(p => {
+          if (!previousProductIds.has(p.id)) {
+            addCustomerNotification();
+          }
+        });
+      }
+
       setProducts(productsData);
     } catch (error) {
       console.error("Error fetching products: ", error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [products, addCustomerNotification]);
   
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Refetch products when window gets focus to see updates from admin
   useEffect(() => {
@@ -42,6 +62,23 @@ export default function Home() {
     };
   }, [fetchProducts]);
 
+  const handleSpecialRequest = async () => {
+    if (!requestDetails.name || !requestDetails.details) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all fields." });
+      return;
+    }
+    const newRequest: SpecialRequest = {
+      id: Date.now(),
+      customerName: requestDetails.name,
+      requestDetails: requestDetails.details,
+      date: new Date().toISOString().split("T")[0],
+      status: "Pending",
+    };
+    await addSpecialRequest(newRequest);
+    addAdminNotification();
+    toast({ title: "Request Sent", description: "The admin has been notified of your special request." });
+    setRequestDetails({ name: "", details: "" });
+  };
 
   const filteredProducts = products.filter((product) =>
     p(product, 'name').toLowerCase().includes(searchQuery.toLowerCase())
@@ -74,9 +111,29 @@ export default function Home() {
             </div>
           ))
         ) : (
-          filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))
+          <>
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+             <Card className="flex flex-col justify-center">
+              <CardHeader>
+                <CardTitle>Need something else?</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="customerName">Your Name</Label>
+                  <Input id="customerName" placeholder="Your name" value={requestDetails.name} onChange={(e) => setRequestDetails({ ...requestDetails, name: e.target.value })}/>
+                </div>
+                <div>
+                  <Label htmlFor="requestDetails">Product Request</Label>
+                  <Textarea id="requestDetails" placeholder="Describe the product you need..." value={requestDetails.details} onChange={(e) => setRequestDetails({ ...requestDetails, details: e.target.value })}/>
+                </div>
+                <Button onClick={handleSpecialRequest} className="w-full">
+                  <Send className="mr-2 h-4 w-4" /> Send Request
+                </Button>
+              </CardContent>
+            </Card>
+          </>
         )}
       </div>
     </div>

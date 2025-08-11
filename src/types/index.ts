@@ -30,6 +30,15 @@ export interface CustomerRequest {
   }
 }
 
+export interface SpecialRequest {
+  id: number;
+  customerName: string;
+  requestDetails: string;
+  status: "Pending" | "Fulfilled";
+  date: string;
+}
+
+
 export type ProductTranslations = {
   [key: string]: {
     [key: string]: string;
