@@ -18,25 +18,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useLanguage } from "@/context/language-context";
 import { getProducts, customerRequests, addProduct, updateProduct, deleteProduct } from "@/lib/data";
 import type { Product, CustomerRequest } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export default function AdminPage() {
   const { t, p } = useLanguage();
@@ -46,10 +43,9 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [requests] = useState<CustomerRequest[]>(customerRequests);
-  
-  const [open, setOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({
+
+  // State for Add New Product
+  const [newProduct, setNewProduct] = useState({
     name: "",
     price: 0,
     description: "",
@@ -58,6 +54,16 @@ export default function AdminPage() {
     type: "Milk",
     stock: 100,
   });
+
+  // State for Update Product Price
+  const [updatePriceData, setUpdatePriceData] = useState({
+    productId: "",
+    newPrice: 0,
+  });
+  
+  // State for Delete Product
+  const [deleteProductId, setDeleteProductId] = useState("");
+
 
   useEffect(() => {
     if (!user) {
@@ -73,42 +79,49 @@ export default function AdminPage() {
   useEffect(() => {
     fetchProducts();
   }, []);
-
-  const handleOpenDialog = (product?: Product) => {
-    if (product) {
-      setIsEditing(true);
-      setCurrentProduct(product);
-    } else {
-      setIsEditing(false);
-      setCurrentProduct({
-        name: "",
-        price: 0,
-        description: "",
-        imageUrl: "https://placehold.co/600x400.png",
-        aiHint: "new product",
-        type: "Milk",
-        stock: 100,
-      });
+  
+  const handleAddNewProduct = async () => {
+    if (!newProduct.name || !newProduct.description) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all fields." });
+      return;
     }
-    setOpen(true);
-  };
-
-  const handleSaveProduct = async () => {
-    if (isEditing) {
-      await updateProduct(currentProduct as Product);
-      toast({ title: "Product Updated", description: `${currentProduct.name} has been updated.` });
-    } else {
-      const newProduct = await addProduct(currentProduct as Omit<Product, 'id' | 'translations'>);
-      toast({ title: "Product Added", description: `${newProduct.name} has been added.` });
-    }
+    await addProduct(newProduct);
+    toast({ title: "Product Added", description: `${newProduct.name} has been added.` });
     await fetchProducts();
-    setOpen(false);
+    setNewProduct({
+      name: "",
+      price: 0,
+      description: "",
+      imageUrl: "https://placehold.co/600x400.png",
+      aiHint: "new product",
+      type: "Milk",
+      stock: 100,
+    });
   };
 
-  const handleDeleteProduct = async (productId: string) => {
-    await deleteProduct(productId);
+  const handleUpdatePrice = async () => {
+    if (!updatePriceData.productId || updatePriceData.newPrice <= 0) {
+      toast({ variant: "destructive", title: "Invalid Data", description: "Please select a product and enter a valid price." });
+      return;
+    }
+    const productToUpdate = products.find(p => p.id === updatePriceData.productId);
+    if (productToUpdate) {
+      await updateProduct({ ...productToUpdate, price: updatePriceData.newPrice });
+      toast({ title: "Price Updated", description: `${productToUpdate.name}'s price has been updated.` });
+      await fetchProducts();
+      setUpdatePriceData({ productId: "", newPrice: 0 });
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!deleteProductId) {
+       toast({ variant: "destructive", title: "No Product Selected", description: "Please select a product to delete." });
+      return;
+    }
+    await deleteProduct(deleteProductId);
     toast({ title: "Product Deleted", description: "The product has been removed." });
     await fetchProducts();
+    setDeleteProductId("");
   };
   
   if (!user) {
@@ -116,120 +129,127 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{t('adminDashboard')}</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              {t('addNewProduct')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{isEditing ? 'Edit Product' : t('addNewProduct')}</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">{t('nameLabel')}</Label>
-                <Input id="name" value={currentProduct.name} onChange={(e) => setCurrentProduct({ ...currentProduct, name: e.target.value })} className="col-span-3"/>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="price" className="text-right">{t('priceLabel')}</Label>
-                <Input id="price" value={currentProduct.price ?? ''} onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value === '' ? undefined : Number(e.target.value) })} className="col-span-3" type="number" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">{t('descriptionLabel')}</Label>
-                <Textarea id="description" value={currentProduct.description} onChange={(e) => setCurrentProduct({ ...currentProduct, description: e.target.value })} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="imageUrl" className="text-right">Image URL</Label>
-                <Input id="imageUrl" value={currentProduct.imageUrl} onChange={(e) => setCurrentProduct({ ...currentProduct, imageUrl: e.target.value })} className="col-span-3"/>
-              </div>
-            </div>
-            <DialogFooter>
-               <DialogClose asChild>
-                <Button variant="outline">{t('cancel')}</Button>
-              </DialogClose>
-              <Button type="submit" onClick={handleSaveProduct}>{isEditing ? 'Save Changes' : t('addProduct')}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+    <div className="container mx-auto p-4 md:p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <p className="text-muted-foreground">Manage products, requests, and bookings.</p>
       </div>
 
-      {/* Products Management Table */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>{t('products')}</CardTitle>
-          <CardDescription>Manage your store's products.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody suppressHydrationWarning>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{p(product, 'name')}</TableCell>
-                  <TableCell>₹{product.price}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(product)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Add New Product Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Product</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div>
+                <Label htmlFor="productName">Product Name</Label>
+                <Input id="productName" placeholder="e.g., Premium Alfalfa Hay" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}/>
+              </div>
+              <div>
+                <Label htmlFor="productDescription">Product Description</Label>
+                <Textarea id="productDescription" placeholder="Describe the product and its benefits..." value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}/>
+              </div>
+               <div>
+                <Label htmlFor="price">Price</Label>
+                <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })} />
+              </div>
+               <div>
+                <Label htmlFor="imageUrl">Image URL</Label>
+                <Input id="imageUrl" placeholder="https://placehold.co/600x400.png" value={newProduct.imageUrl} onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}/>
+              </div>
+              <Button onClick={handleAddNewProduct}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Product
+              </Button>
+            </CardContent>
+          </Card>
 
-      {/* Bookings Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('customerBookings')}</CardTitle>
-          <CardDescription>{t('customerBookingsSubtitle')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t('customer')}</TableHead>
-                <TableHead>{t('product')}</TableHead>
-                <TableHead>{t('quantity')}</TableHead>
-                <TableHead>{t('status')}</TableHead>
-                <TableHead>{t('date')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody suppressHydrationWarning>
-              {requests.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell>{request.customerName}</TableCell>
-                  <TableCell>{p(request, 'productName')}</TableCell>
-                  <TableCell>{request.quantity}</TableCell>
-                  <TableCell>
-                    <Badge variant={request.status === 'Fulfilled' ? 'default' : request.status === 'Pending' ? 'secondary' : 'destructive'}>
-                      {t(request.status.toLowerCase())}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{request.date}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+          {/* Update Product Price Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Update Product Price</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Product</Label>
+                <Select value={updatePriceData.productId} onValueChange={(value) => setUpdatePriceData({ ...updatePriceData, productId: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a product to update" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map(product => (
+                      <SelectItem key={product.id} value={product.id}>{p(product, 'name')}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="newPrice">New Price</Label>
+                <Input id="newPrice" type="number" value={updatePriceData.newPrice} onChange={(e) => setUpdatePriceData({ ...updatePriceData, newPrice: Number(e.target.value) })} />
+              </div>
+              <Button onClick={handleUpdatePrice}>
+                <Edit className="mr-2 h-4 w-4" /> Update Price
+              </Button>
+            </CardContent>
+          </Card>
+          
+          {/* Delete Product Card */}
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="text-destructive">Delete Product</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div>
+                <Label>Product to Delete</Label>
+                <Select value={deleteProductId} onValueChange={setDeleteProductId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a product to delete" />
+                  </SelectTrigger>
+                  <SelectContent>
+                     {products.map(product => (
+                      <SelectItem key={product.id} value={product.id}>{p(product, 'name')}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="destructive" onClick={handleDeleteProduct}>
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Product
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Bookings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Product</TableHead>
+                    <TableHead className="text-right">Quantity</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody suppressHydrationWarning>
+                  {requests.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell>{request.customerName}</TableCell>
+                      <TableCell>{p(request, 'productName')}</TableCell>
+                      <TableCell className="text-right">{request.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
