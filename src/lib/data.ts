@@ -1,6 +1,6 @@
 import type { Product, CustomerRequest } from "@/types";
 
-const products: Product[] = [
+export let products: Product[] = [
     {
       id: "1",
       name: "Organic Cow Milk",
@@ -69,12 +69,32 @@ const products: Product[] = [
 
 export const getProducts = async (): Promise<Product[]> => {
   // Simulate async call
-  return new Promise(resolve => setTimeout(() => resolve(products), 500));
+  return new Promise(resolve => setTimeout(() => resolve(products), 100));
 };
 
 export const getProductById = async (id: string): Promise<Product | null> => {
     const product = products.find(p => p.id === id) || null;
-    return new Promise(resolve => setTimeout(() => resolve(product), 500));
+    return new Promise(resolve => setTimeout(() => resolve(product), 100));
+}
+
+export const addProduct = async (product: Omit<Product, 'id' | 'translations'>): Promise<Product> => {
+  const newProduct: Product = {
+    ...product,
+    id: (Math.random() + 1).toString(36).substring(7), // simple unique id
+    translations: {}
+  };
+  products.push(newProduct);
+  return new Promise(resolve => setTimeout(() => resolve(newProduct), 100));
+}
+
+export const updateProduct = async (product: Product): Promise<Product> => {
+  products = products.map(p => p.id === product.id ? product : p);
+  return new Promise(resolve => setTimeout(() => resolve(product), 100));
+}
+
+export const deleteProduct = async (productId: string): Promise<void> => {
+  products = products.filter(p => p.id !== productId);
+  return new Promise(resolve => setTimeout(() => resolve(), 100));
 }
 
 

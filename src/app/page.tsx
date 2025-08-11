@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useLanguage } from "@/context/language-context";
 import type { Product } from "@/types";
@@ -15,19 +15,33 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsData = await getProducts();
-        setProducts(productsData);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const productsData = await getProducts();
+      setProducts(productsData);
+    } catch (error) {
+      console.error("Error fetching products: ", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+  
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // Refetch products when window gets focus to see updates from admin
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchProducts();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchProducts]);
+
 
   const filteredProducts = products.filter((product) =>
     p(product, 'name').toLowerCase().includes(searchQuery.toLowerCase())

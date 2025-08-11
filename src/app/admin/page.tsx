@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/context/language-context";
-import { getProducts, customerRequests } from "@/lib/data";
+import { getProducts, customerRequests, addProduct, updateProduct, deleteProduct } from "@/lib/data";
 import type { Product, CustomerRequest } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
@@ -65,11 +65,12 @@ export default function AdminPage() {
     }
   }, [user, router]);
 
+  const fetchProducts = async () => {
+    const productsData = await getProducts();
+    setProducts(productsData);
+  };
+  
   useEffect(() => {
-    const fetchProducts = async () => {
-      const productsData = await getProducts();
-      setProducts(productsData);
-    };
     fetchProducts();
   }, []);
 
@@ -92,27 +93,22 @@ export default function AdminPage() {
     setOpen(true);
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     if (isEditing) {
-      // Update logic
-      setProducts(products.map(p => p.id === currentProduct.id ? currentProduct as Product : p));
+      await updateProduct(currentProduct as Product);
       toast({ title: "Product Updated", description: `${currentProduct.name} has been updated.` });
     } else {
-      // Add new logic
-      const newProduct: Product = {
-        ...currentProduct,
-        id: (products.length + 1).toString(),
-        translations: {}
-      } as Product;
-      setProducts([...products, newProduct]);
+      const newProduct = await addProduct(currentProduct as Omit<Product, 'id' | 'translations'>);
       toast({ title: "Product Added", description: `${newProduct.name} has been added.` });
     }
+    await fetchProducts();
     setOpen(false);
   };
 
-  const handleDeleteProduct = (productId: string) => {
-    setProducts(products.filter(p => p.id !== productId));
+  const handleDeleteProduct = async (productId: string) => {
+    await deleteProduct(productId);
     toast({ title: "Product Deleted", description: "The product has been removed." });
+    await fetchProducts();
   };
   
   if (!user) {
@@ -141,7 +137,7 @@ export default function AdminPage() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="price" className="text-right">{t('priceLabel')}</Label>
-                <Input id="price" value={currentProduct.price || ''} onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value === '' ? undefined : Number(e.target.value) })} className="col-span-3" type="number" />
+                <Input id="price" value={currentProduct.price ?? ''} onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value === '' ? undefined : Number(e.target.value) })} className="col-span-3" type="number" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="description" className="text-right">{t('descriptionLabel')}</Label>
