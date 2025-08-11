@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -51,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden flex flex-col">
       <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           <Image
@@ -63,13 +64,16 @@ export function ProductCard({ product }: ProductCardProps) {
             data-ai-hint={product.aiHint}
           />
         </div>
-        <div className="p-6">
+        <div className="p-6 pb-0">
           <CardTitle>{p(product, 'name')}</CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-gray-600 h-20 overflow-hidden">{p(product, 'description')}</p>
-        <p className="font-bold text-lg mt-2">₹{product.price}</p>
+      <CardContent className="flex-grow">
+        <p className="text-sm text-muted-foreground h-20 overflow-hidden">{p(product, 'description')}</p>
+        <div className="flex justify-between items-center mt-4">
+          <p className="font-bold text-lg">₹{product.price}</p>
+          <Badge variant="outline">Stock: {product.stock}</Badge>
+        </div>
       </CardContent>
       <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
