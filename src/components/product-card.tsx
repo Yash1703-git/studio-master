@@ -51,18 +51,21 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="relative h-48">
+    <Card className="overflow-hidden">
+      <CardHeader className="p-0">
+        <div className="relative h-48 w-full">
           <Image
             src={product.imageUrl}
             alt={p(product, 'name')}
             fill
-            className="object-cover rounded-t-lg"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover"
             data-ai-hint={product.aiHint}
           />
         </div>
-        <CardTitle className="pt-4">{p(product, 'name')}</CardTitle>
+        <div className="p-6">
+          <CardTitle>{p(product, 'name')}</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 h-20 overflow-hidden">{p(product, 'description')}</p>
