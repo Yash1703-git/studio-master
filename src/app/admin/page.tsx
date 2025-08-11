@@ -141,7 +141,7 @@ export default function AdminPage() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="price" className="text-right">{t('priceLabel')}</Label>
-                <Input id="price" value={currentProduct.price} onChange={(e) => setCurrentProduct({ ...currentProduct, price: Number(e.target.value) })} className="col-span-3" type="number" />
+                <Input id="price" value={currentProduct.price || ''} onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value === '' ? undefined : Number(e.target.value) })} className="col-span-3" type="number" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="description" className="text-right">{t('descriptionLabel')}</Label>

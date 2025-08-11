@@ -26,7 +26,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { t, p } = useLanguage();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number | ''>(1);
   const [customerName, setCustomerName] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -101,7 +101,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   id="quantity"
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                   className="col-span-3"
                   min="1"
                 />
