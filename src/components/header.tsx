@@ -10,8 +10,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "./ui/dropdown-menu";
-import { Globe, Menu, LogOut, User } from "lucide-react";
+import { Globe, Menu, LogOut, User, LayoutDashboard, UserCircle, LogIn } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -20,25 +21,26 @@ import {
 import { useState } from "react";
 import { useLanguage } from "@/context/language-context";
 import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/", labelKey: "home" },
-  { href: "/dashboard", labelKey: "dashboard" },
-  { href: "/admin", labelKey: "admin" },
+  { href: "/advisor", labelKey: "advisor" },
 ];
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const NavLink = ({ href, labelKey }: { href: string; labelKey: string }) => (
     <Link
       href={href}
       className={cn(
         "text-sm font-medium transition-colors hover:text-primary",
-        pathname === href ? "text-primary" : "text-muted-foreground"
+        pathname === href ? "text-primary font-semibold" : "text-muted-foreground"
       )}
       onClick={() => setIsMobileMenuOpen(false)}
     >
@@ -49,17 +51,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6">
-            <Logo />
-          </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map((link) => {
-              if (link.href === "/admin" && user?.role !== "admin") return null;
-              return <NavLink key={link.href} {...link} />;
-            })}
-          </nav>
-        </div>
+        <Link href="/" className="mr-6 flex items-center">
+          <Logo />
+        </Link>
         
         <div className="md:hidden">
            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -75,21 +69,26 @@ export function Header() {
                   <Logo />
                 </Link>
                 <nav className="flex flex-col gap-4">
-                  {navLinks.map((link) => {
-                     if (link.href === "/admin" && user?.role !== "admin") return null;
-                    return <NavLink key={link.href} {...link} />
-                  })}
+                  {navLinks.map((link) => (
+                    <NavLink key={link.href} {...link} />
+                  ))}
                 </nav>
               </div>
             </SheetContent>
           </Sheet>
         </div>
+        
+        <nav className="mr-auto hidden items-center space-x-6 text-sm font-medium md:flex">
+          {navLinks.map((link) => (
+            <NavLink key={link.href} {...link} />
+          ))}
+        </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5 text-accent" />
+                <Globe className="h-5 w-5" />
                 <span className="sr-only">Change language</span>
               </Button>
             </DropdownMenuTrigger>
@@ -99,25 +98,49 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5 text-accent" />
-                  <span className="sr-only">User menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button asChild>
-              <Link href="/login">Login</Link>
-            </Button>
+          {!loading && (
+            user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                     <UserCircle className="h-6 w-6" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem disabled>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem onClick={() => router.push('/admin')}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </DropdownMenuItem>
+                  )}
+                   <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>{t('dashboard')}</span>
+                    </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild>
+                <Link href="/login">
+                  <LogIn className="mr-2 h-4 w-4"/>
+                  Login
+                </Link>
+              </Button>
+            )
           )}
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -13,17 +12,20 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Logo } from "@/components/logo";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<"customer" | "admin">("customer");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       if (userCredential) {
@@ -38,19 +40,24 @@ export default function SignupPage() {
       }
     } catch (error: any) {
        toast({ variant: "destructive", title: "Error", description: error.message });
+    } finally {
+        setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-secondary/50 p-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+         <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+                <Logo />
+            </div>
+          <CardTitle className="font-lexend text-2xl">Create an Account</CardTitle>
+          <CardDescription>Join DairyMix to manage and grow your farm.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
                 id="name"
@@ -59,9 +66,10 @@ export default function SignupPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
                 required
+                disabled={loading}
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -70,9 +78,10 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
+                disabled={loading}
               />
             </div>
-             <div>
+             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
@@ -81,12 +90,13 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="6+ characters"
                 required
+                disabled={loading}
               />
             </div>
             
-            <div>
-                <Label>Role</Label>
-                 <RadioGroup defaultValue="customer" onValueChange={(value) => setRole(value as "customer" | "admin")} className="flex space-x-4 mt-2">
+            <div className="space-y-3">
+                <Label>I am a...</Label>
+                 <RadioGroup defaultValue="customer" onValueChange={(value) => setRole(value as "customer" | "admin")} className="flex space-x-4">
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="customer" id="customer" />
                         <Label htmlFor="customer">Customer</Label>
@@ -98,13 +108,13 @@ export default function SignupPage() {
                 </RadioGroup>
             </div>
 
-            <Button type="submit" className="w-full">
-              Sign Up
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Creating Account..." : "Sign Up"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
-            <Link href="/login" className="underline">
+            <Link href="/login" className="underline font-semibold text-primary">
               Log in
             </Link>
           </div>

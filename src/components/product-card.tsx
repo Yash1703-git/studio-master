@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import type { Product } from "@/types";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,7 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useLanguage } from "@/context/language-context";
+import { Badge } from "./ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -26,7 +27,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const { language, t, p } = useLanguage();
+  const { t, p } = useLanguage();
 
   const handleRequest = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,8 +47,9 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-lg">
-      <CardHeader className="p-0">
+    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <CardHeader className="p-0 relative">
+        <Badge className="absolute top-3 right-3">{product.type}</Badge>
         <div className="aspect-video relative">
           <Image
             src={product.imageUrl}
@@ -59,14 +61,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg font-headline mb-1">{p(product, 'name')}</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">{p(product, 'description')}</CardDescription>
+        <CardTitle className="text-lg font-lexend mb-2">{p(product, 'name')}</CardTitle>
+        <p className="text-sm text-muted-foreground line-clamp-2">{p(product, 'description')}</p>
       </CardContent>
-      <CardFooter className="p-4 flex justify-between items-center mt-auto">
-        <p className="text-lg font-bold text-foreground">${product.price.toFixed(2)}</p>
+      <CardFooter className="p-4 flex justify-between items-center mt-auto bg-secondary/30">
+        <p className="text-xl font-bold font-lexend text-foreground">${product.price.toFixed(2)}</p>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>{t('request')}</Button>
+             <Button>{t('request')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

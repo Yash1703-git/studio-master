@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -29,6 +28,14 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/language-context";
 import { Product } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function AdminPage() {
   const { user, loading } = useAuth();
@@ -40,12 +47,13 @@ export default function AdminPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && (!user || user.role !== 'admin')) {
       router.push("/login");
     }
   }, [user, loading, router]);
 
   const fetchProducts = async () => {
+    if (!user) return;
     const querySnapshot = await getDocs(collection(db, "products"));
     const productsData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Product[];
     setProducts(productsData);
@@ -53,7 +61,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [user]);
   
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -111,89 +119,104 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">{t('adminDashboard')}</h1>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) {
-              setEditingProduct(null);
-            }
-        }}>
-          <DialogTrigger asChild>
-            <Button>Add Product</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleFormSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">Name (EN)</Label>
-                  <Input id="name" name="name" defaultValue={editingProduct?.name} className="col-span-3" required />
-                </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name_mr" className="text-right">Name (MR)</Label>
-                  <Input id="name_mr" name="name_mr" defaultValue={editingProduct?.translations?.mr?.name} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="price" className="text-right">Price</Label>
-                  <Input id="price" name="price" type="number" defaultValue={editingProduct?.price} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="type" className="text-right">Type</Label>
-                  <Input id="type" name="type" defaultValue={editingProduct?.type} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="stock" className="text-right">Stock</Label>
-                  <Input id="stock" name="stock" type="number" defaultValue={editingProduct?.stock} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="description" className="text-right">Description (EN)</Label>
-                  <Input id="description" name="description" defaultValue={editingProduct?.description} className="col-span-3" required />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="description_mr" className="text-right">Description (MR)</Label>
-                  <Input id="description_mr" name="description_mr" defaultValue={editingProduct?.translations?.mr?.description} className="col-span-3" required />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">Cancel</Button>
-                </DialogClose>
-                <Button type="submit">Save</Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-      
+    <div className="container mx-auto px-4 py-12">
+      <header className="mb-8">
+        <h1 className="text-4xl font-bold tracking-tighter font-lexend">{t('adminDashboard')}</h1>
+        <p className="text-muted-foreground mt-2">Manage your products and view customer requests.</p>
+      </header>
+
       <Card>
-        <CardHeader>
-          <CardTitle>Products</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+                <CardTitle>Product Catalog</CardTitle>
+                <CardDescription>View, add, edit, or delete your products.</CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                setIsDialogOpen(open);
+                if (!open) {
+                  setEditingProduct(null);
+                }
+            }}>
+              <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2" />
+                    Add Product
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleFormSubmit}>
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name (EN)</Label>
+                      <Input id="name" name="name" defaultValue={editingProduct?.name} required />
+                    </div>
+                     <div className="space-y-2">
+                      <Label htmlFor="name_mr">Name (MR)</Label>
+                      <Input id="name_mr" name="name_mr" defaultValue={editingProduct?.translations?.mr?.name} required />
+                    </div>
+                     <div className="space-y-2">
+                      <Label htmlFor="description">Description (EN)</Label>
+                      <Input id="description" name="description" defaultValue={editingProduct?.description} required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description_mr">Description (MR)</Label>
+                      <Input id="description_mr" name="description_mr" defaultValue={editingProduct?.translations?.mr?.description} required />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="price">Price</Label>
+                          <Input id="price" name="price" type="number" defaultValue={editingProduct?.price} required />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="stock">Stock</Label>
+                          <Input id="stock" name="stock" type="number" defaultValue={editingProduct?.stock} required />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="type">Type</Label>
+                      <Input id="type" name="type" defaultValue={editingProduct?.type} placeholder="e.g. Cow Feed, Mineral Supplement" required />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="secondary">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit">Save Product</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead>Price</TableHead>
                 <TableHead>Stock</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map(product => (
                 <TableRow key={product.id}>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>${product.price.toFixed(2)}</TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.type}</TableCell>
+                  <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>Edit</Button>
-                    <Button variant="destructive" size="sm" className="ml-2" onClick={() => handleDelete(product.id as string)}>Delete</Button>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(product)}>
+                      <Edit className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDelete(product.id as string)}>
+                      <Trash2 className="h-4 w-4" />
+                       <span className="sr-only">Delete</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -205,10 +228,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
