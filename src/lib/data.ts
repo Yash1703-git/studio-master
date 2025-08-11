@@ -83,7 +83,7 @@ export const addProduct = async (product: Omit<Product, 'id' | 'translations'>):
     id: (Math.random() + 1).toString(36).substring(7), // simple unique id
     translations: {}
   };
-  products.push(newProduct);
+  products.unshift(newProduct);
   return new Promise(resolve => setTimeout(() => resolve(newProduct), 100));
 }
 
@@ -204,6 +204,8 @@ export const getSpecialRequests = async (): Promise<SpecialRequest[]> => {
 }
 
 export const addSpecialRequest = async (request: SpecialRequest): Promise<SpecialRequest> => {
-  specialRequests.push(request);
+  specialRequests.unshift(request);
   return new Promise(resolve => setTimeout(() => resolve(request), 100));
 }
+
+    

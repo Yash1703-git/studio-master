@@ -71,7 +71,7 @@ export default function AdminPage() {
   // State for Update Product Price
   const [updatePriceData, setUpdatePriceData] = useState<{productId: string, newPrice: number | ''}>({
     productId: "",
-    newPrice: 0,
+    newPrice: '',
   });
   
   // State for Delete Product
@@ -114,11 +114,11 @@ export default function AdminPage() {
   
   const handleAddNewProduct = async () => {
     if (!newProduct.name || !newProduct.description) {
-      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all fields." });
+      toast({ variant: "destructive", title: t('toastMissingFieldsTitle'), description: t('toastMissingFieldsDescription') });
       return;
     }
     await addProduct(newProduct);
-    toast({ title: "Product Added", description: `${newProduct.name} has been added.` });
+    toast({ title: t('toastProductAddedTitle'), description: t('toastProductAddedDescription', { productName: newProduct.name }) });
     await fetchProducts();
     setNewProduct({
       name: "",
@@ -133,25 +133,25 @@ export default function AdminPage() {
 
   const handleUpdatePrice = async () => {
     if (!updatePriceData.productId || (updatePriceData.newPrice !== '' && updatePriceData.newPrice <= 0)) {
-      toast({ variant: "destructive", title: "Invalid Data", description: "Please select a product and enter a valid price." });
+      toast({ variant: "destructive", title: t('toastInvalidDataTitle'), description: t('toastInvalidDataDescription') });
       return;
     }
     const productToUpdate = products.find(p => p.id === updatePriceData.productId);
     if (productToUpdate) {
       await updateProduct({ ...productToUpdate, price: Number(updatePriceData.newPrice) });
-      toast({ title: "Price Updated", description: `${productToUpdate.name}'s price has been updated.` });
+      toast({ title: t('toastPriceUpdatedTitle'), description: t('toastPriceUpdatedDescription', { productName: p(productToUpdate, 'name') }) });
       await fetchProducts();
-      setUpdatePriceData({ productId: "", newPrice: 0 });
+      setUpdatePriceData({ productId: "", newPrice: '' });
     }
   };
 
   const handleDeleteProduct = async () => {
     if (!deleteProductId) {
-       toast({ variant: "destructive", title: "No Product Selected", description: "Please select a product to delete." });
+       toast({ variant: "destructive", title: t('toastNoProductSelectedTitle'), description: t('toastNoProductSelectedDescription') });
       return;
     }
     await deleteProduct(deleteProductId);
-    toast({ title: "Product Deleted", description: "The product has been removed." });
+    toast({ title: t('toastProductDeletedTitle'), description: t('toastProductDeletedDescription') });
     await fetchProducts();
     setDeleteProductId("");
   };
@@ -169,8 +169,8 @@ export default function AdminPage() {
     <>
       <div className="container mx-auto p-4 md:p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage products, requests, and bookings.</p>
+          <h1 className="text-3xl font-bold">{t('adminDashboard')}</h1>
+          <p className="text-muted-foreground">{t('adminDashboardManage')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -179,27 +179,27 @@ export default function AdminPage() {
             {/* Add New Product Card */}
             <Card>
               <CardHeader>
-                <CardTitle>Add New Product</CardTitle>
+                <CardTitle>{t('addNewProduct')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="productName">Product Name</Label>
-                  <Input id="productName" placeholder="e.g., Premium Alfalfa Hay" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}/>
+                  <Label htmlFor="productName">{t('productName')}</Label>
+                  <Input id="productName" placeholder={t('productNamePlaceholder')} value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}/>
                 </div>
                 <div>
-                  <Label htmlFor="productDescription">Product Description</Label>
-                  <Textarea id="productDescription" placeholder="Describe the product and its benefits..." value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}/>
+                  <Label htmlFor="productDescription">{t('productDescription')}</Label>
+                  <Textarea id="productDescription" placeholder={t('productDescriptionPlaceholder')} value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}/>
                 </div>
                 <div>
-                  <Label htmlFor="price">Price</Label>
-                  <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value === '' ? 0 : Number(e.target.value) })} />
+                  <Label htmlFor="price">{t('priceLabel')}</Label>
+                  <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value === '' ? '' : Number(e.target.value) })} />
                 </div>
                 <div>
-                  <Label htmlFor="imageUrl">Image URL</Label>
+                  <Label htmlFor="imageUrl">{t('imageUrl')}</Label>
                   <Input id="imageUrl" placeholder="https://placehold.co/600x400.png" value={newProduct.imageUrl} onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}/>
                 </div>
                 <Button onClick={handleAddNewProduct}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Product
+                  <PlusCircle className="mr-2 h-4 w-4" /> {t('addProduct')}
                 </Button>
               </CardContent>
             </Card>
@@ -207,14 +207,14 @@ export default function AdminPage() {
             {/* Update Product Price Card */}
             <Card>
               <CardHeader>
-                <CardTitle>Update Product Price</CardTitle>
+                <CardTitle>{t('updateProductPrice')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label>Product</Label>
+                  <Label>{t('product')}</Label>
                   <Select value={updatePriceData.productId} onValueChange={(value) => setUpdatePriceData({ ...updatePriceData, productId: value })}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a product to update" />
+                      <SelectValue placeholder={t('selectProductToUpdate')} />
                     </SelectTrigger>
                     <SelectContent>
                       {products.map(product => (
@@ -224,11 +224,11 @@ export default function AdminPage() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="newPrice">New Price</Label>
+                  <Label htmlFor="newPrice">{t('newPrice')}</Label>
                   <Input id="newPrice" type="number" value={updatePriceData.newPrice} onChange={(e) => setUpdatePriceData({ ...updatePriceData, newPrice: e.target.value === '' ? '' : Number(e.target.value) })} />
                 </div>
                 <Button onClick={handleUpdatePrice}>
-                  <Edit className="mr-2 h-4 w-4" /> Update Price
+                  <Edit className="mr-2 h-4 w-4" /> {t('updatePrice')}
                 </Button>
               </CardContent>
             </Card>
@@ -236,14 +236,14 @@ export default function AdminPage() {
             {/* Delete Product Card */}
             <Card className="border-destructive">
               <CardHeader>
-                <CardTitle className="text-destructive">Delete Product</CardTitle>
+                <CardTitle className="text-destructive">{t('deleteProductTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label>Product to Delete</Label>
+                  <Label>{t('productToDelete')}</Label>
                   <Select value={deleteProductId} onValueChange={setDeleteProductId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a product to delete" />
+                      <SelectValue placeholder={t('selectProductToDelete')} />
                     </SelectTrigger>
                     <SelectContent>
                       {products.map(product => (
@@ -253,7 +253,7 @@ export default function AdminPage() {
                   </Select>
                 </div>
                 <Button variant="destructive" onClick={handleDeleteProduct}>
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete Product
+                  <Trash2 className="mr-2 h-4 w-4" /> {t('deleteProductBtn')}
                 </Button>
               </CardContent>
             </Card>
@@ -263,17 +263,17 @@ export default function AdminPage() {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>Product Bookings</CardTitle>
+                <CardTitle>{t('productBookings')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Product</TableHead>
-                      <TableHead>Delivery</TableHead>
-                      <TableHead className="text-right">Qty</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t('customer')}</TableHead>
+                      <TableHead>{t('product')}</TableHead>
+                      <TableHead>{t('delivery')}</TableHead>
+                      <TableHead className="text-right">{t('qty')}</TableHead>
+                      <TableHead className="text-right">{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody suppressHydrationWarning>
@@ -281,7 +281,7 @@ export default function AdminPage() {
                       <TableRow key={request.id}>
                         <TableCell className="font-medium">{request.customerName}</TableCell>
                         <TableCell>{p(request, 'productName')}</TableCell>
-                        <TableCell>{request.deliveryType}</TableCell>
+                        <TableCell>{t(request.deliveryType.toLowerCase().replace(' ', ''))}</TableCell>
                         <TableCell className="text-right">{request.quantity}</TableCell>
                         <TableCell className="text-right">
                           {request.deliveryType === 'Home Delivery' && (
@@ -299,7 +299,7 @@ export default function AdminPage() {
             
             <Card>
               <CardHeader>
-                  <CardTitle>Customer Requests</CardTitle>
+                  <CardTitle>{t('customerRequests')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                   {specialRequests.length > 0 ? (
@@ -308,12 +308,12 @@ export default function AdminPage() {
                               <Package className="h-6 w-6 text-muted-foreground" />
                               <div className="flex-grow">
                                   <p className="font-medium">{request.requestDetails}</p>
-                                  <p className="text-sm text-muted-foreground">From: {request.customerName}</p>
+                                  <p className="text-sm text-muted-foreground">{t('from')} {request.customerName}</p>
                               </div>
                           </div>
                       ))
                   ) : (
-                      <p className="text-muted-foreground text-center py-4">No special requests yet.</p>
+                      <p className="text-muted-foreground text-center py-4">{t('noSpecialRequests')}</p>
                   )}
               </CardContent>
             </Card>
@@ -325,21 +325,23 @@ export default function AdminPage() {
       <Dialog open={isAddressDialogOpen} onOpenChange={setIsAddressDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delivery Address</DialogTitle>
+            <DialogTitle>{t('deliveryAddress')}</DialogTitle>
             <DialogDescription>
-              Address for customer: <strong>{selectedRequest?.customerName}</strong>
+              {t('addressForCustomer')} <strong>{selectedRequest?.customerName}</strong>
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <p className="p-4 border rounded-md bg-muted text-muted-foreground">
-              {selectedRequest?.address || "No address provided."}
+              {selectedRequest?.address || t('noAddressProvided')}
             </p>
           </div>
           <DialogFooter>
-            <Button onClick={() => setIsAddressDialogOpen(false)}>Close</Button>
+            <Button onClick={() => setIsAddressDialogOpen(false)}>{t('close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
   );
 }
+
+    

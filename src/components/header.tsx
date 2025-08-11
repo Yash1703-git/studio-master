@@ -77,7 +77,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
+                <span className="sr-only">{t('toggleMenu')}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
@@ -99,13 +99,13 @@ export function Header() {
               <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center rounded-full p-0">{notificationCount}</Badge>
             )}
             <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
+            <span className="sr-only">{t('notifications')}</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Globe className="h-5 w-5" />
-                <span className="sr-only">Change language</span>
+                <span className="sr-only">{t('changeLanguage')}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -114,10 +114,10 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           {user ? (
-            <Button variant="outline" onClick={logout}>Logout</Button>
+            <Button variant="outline" onClick={logout}>{t('logout')}</Button>
           ) : (
             <Button asChild>
-              <Link href="/login">Login</Link>
+              <Link href="/login">{t('login')}</Link>
             </Button>
           )}
         </div>
@@ -125,3 +125,5 @@ export function Header() {
     </header>
   );
 }
+
+    

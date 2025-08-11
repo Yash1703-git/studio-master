@@ -14,25 +14,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/language-context";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleLogin = async () => {
     try {
       await login(email, password);
       toast({
-        title: "Login Successful",
-        description: "Welcome back, admin!",
+        title: t('toastLoginSuccessTitle'),
+        description: t('toastLoginSuccessDescription'),
       });
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Login Failed",
-        description: error.message,
+        title: t('toastLoginFailedTitle'),
+        description: t('toastLoginFailedDescription'),
       });
     }
   };
@@ -41,14 +43,14 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-15rem)]">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-2xl">{t('adminLoginTitle')}</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin dashboard.
+            {t('adminLoginDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('emailLabel')}</Label>
             <Input
               id="email"
               type="email"
@@ -59,7 +61,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('passwordLabel')}</Label>
             <Input
               id="password"
               type="password"
@@ -68,16 +70,18 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
              <p className="text-xs text-muted-foreground">
-              Hint: Use password `password123`
+              {t('passwordHint')}
             </p>
           </div>
         </CardContent>
         <CardFooter>
           <Button className="w-full" onClick={handleLogin}>
-            Sign in
+            {t('signIn')}
           </Button>
         </CardFooter>
       </Card>
     </div>
   );
 }
+
+    

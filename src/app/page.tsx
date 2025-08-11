@@ -64,7 +64,7 @@ export default function Home() {
 
   const handleSpecialRequest = async () => {
     if (!requestDetails.name || !requestDetails.details) {
-      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all fields." });
+      toast({ variant: "destructive", title: t('toastMissingFieldsTitle'), description: t('toastMissingFieldsDescription') });
       return;
     }
     const newRequest: SpecialRequest = {
@@ -76,7 +76,7 @@ export default function Home() {
     };
     await addSpecialRequest(newRequest);
     addAdminNotification();
-    toast({ title: "Request Sent", description: "The admin has been notified of your special request." });
+    toast({ title: t('toastRequestSentTitle'), description: t('toastRequestSentDescription') });
     setRequestDetails({ name: "", details: "" });
   };
 
@@ -92,7 +92,7 @@ export default function Home() {
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Search products..."
+          placeholder={t('searchProductsPlaceholder')}
           className="pl-8"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -122,20 +122,20 @@ export default function Home() {
       <div className="mt-12">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle>Need something else?</CardTitle>
-            <CardDescription>If you can't find the product you're looking for, let us know!</CardDescription>
+            <CardTitle>{t('needSomethingElseTitle')}</CardTitle>
+            <CardDescription>{t('needSomethingElseDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="customerName">Your Name</Label>
-              <Input id="customerName" placeholder="Your name" value={requestDetails.name} onChange={(e) => setRequestDetails({ ...requestDetails, name: e.target.value })}/>
+              <Label htmlFor="customerName">{t('yourNameLabel')}</Label>
+              <Input id="customerName" placeholder={t('yourNamePlaceholder')} value={requestDetails.name} onChange={(e) => setRequestDetails({ ...requestDetails, name: e.target.value })}/>
             </div>
             <div>
-              <Label htmlFor="requestDetails">Product Request</Label>
-              <Textarea id="requestDetails" placeholder="Describe the product you need..." value={requestDetails.details} onChange={(e) => setRequestDetails({ ...requestDetails, details: e.target.value })}/>
+              <Label htmlFor="requestDetails">{t('productRequestLabel')}</Label>
+              <Textarea id="requestDetails" placeholder={t('productRequestPlaceholder')} value={requestDetails.details} onChange={(e) => setRequestDetails({ ...requestDetails, details: e.target.value })}/>
             </div>
             <Button onClick={handleSpecialRequest} className="w-full">
-              <Send className="mr-2 h-4 w-4" /> Send Request
+              <Send className="mr-2 h-4 w-4" /> {t('sendRequest')}
             </Button>
           </CardContent>
         </Card>
@@ -143,3 +143,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

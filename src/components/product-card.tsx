@@ -48,8 +48,8 @@ export function ProductCard({ product }: ProductCardProps) {
     if (!customerName || !quantity) {
       toast({
         variant: "destructive",
-        title: "Missing Fields",
-        description: "Please enter your name and a valid quantity.",
+        title: t('toastMissingFieldsTitle'),
+        description: t('toastMissingFieldsBookingDescription'),
       });
       return;
     }
@@ -57,8 +57,8 @@ export function ProductCard({ product }: ProductCardProps) {
     if (deliveryOption === 'home' && !address.trim()) {
       toast({
         variant: "destructive",
-        title: "Address Required",
-        description: "Please enter a delivery address.",
+        title: t('toastAddressRequiredTitle'),
+        description: t('toastAddressRequiredDescription'),
       });
       return;
     }
@@ -109,7 +109,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-sm text-muted-foreground h-20 overflow-hidden">{p(product, 'description')}</p>
         <div className="flex justify-between items-center mt-4">
           <p className="font-bold text-lg">₹{product.price}</p>
-          <Badge variant="outline">Stock: {product.stock}</Badge>
+          <Badge variant="outline">{t('stock')}: {product.stock}</Badge>
         </div>
       </CardContent>
       <CardFooter>
@@ -134,7 +134,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="col-span-3"
-                  placeholder="Your name"
+                  placeholder={t('yourNamePlaceholder')}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -152,29 +152,29 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="delivery" className="text-right">
-                  Delivery
+                  {t('delivery')}
                 </Label>
                  <Select value={deliveryOption} onValueChange={setDeliveryOption}>
                   <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select delivery option" />
+                    <SelectValue placeholder={t('deliveryOptionPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="store">Keep in store</SelectItem>
-                    <SelectItem value="home">Home Delivery</SelectItem>
+                    <SelectItem value="store">{t('keepInStore')}</SelectItem>
+                    <SelectItem value="home">{t('homeDelivery')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {deliveryOption === 'home' && (
                  <div className="grid grid-cols-4 items-center gap-4">
                    <Label htmlFor="address" className="text-right">
-                    Address
+                    {t('address')}
                   </Label>
                   <Textarea
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="col-span-3"
-                    placeholder="Enter delivery address"
+                    placeholder={t('addressPlaceholder')}
                   />
                 </div>
               )}
@@ -188,3 +188,5 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
+
+    
