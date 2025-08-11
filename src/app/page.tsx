@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { ProductCard } from "@/components/product-card";
 import { useLanguage } from "@/context/language-context";
 import type { Product } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getProducts } from "@/lib/data";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -16,8 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        const productsData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Product[];
+        const productsData = await getProducts();
         setProducts(productsData);
       } catch (error) {
         console.error("Error fetching products: ", error);

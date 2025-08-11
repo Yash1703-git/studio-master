@@ -1,23 +1,80 @@
-import type { Product, CustomerRequest, ProductTranslations } from "@/types";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import type { Product, CustomerRequest } from "@/types";
 
+const products: Product[] = [
+    {
+      id: "1",
+      name: "Organic Cow Milk",
+      price: 3.5,
+      description: "Fresh, pure organic cow milk from grass-fed cows. Rich in calcium and vitamins.",
+      imageUrl: "https://placehold.co/600x400.png",
+      aiHint: "cow milk",
+      type: "Milk",
+      stock: 100,
+      translations: {
+        mr: {
+          name: "सेंद्रिय गायीचे दूध",
+          description: "गवत खाणाऱ्या गायींपासून मिळणारे ताजे, शुद्ध सेंद्रिय गायीचे दूध. कॅल्शियम आणि जीवनसत्त्वांनी समृद्ध."
+        }
+      }
+    },
+    {
+      id: "2",
+      name: "Artisanal Goat Cheese",
+      price: 8.0,
+      description: "Handcrafted goat cheese with a tangy flavor and creamy texture. Perfect for salads and cheese boards.",
+      imageUrl: "https://placehold.co/600x400.png",
+      aiHint: "goat cheese",
+      type: "Cheese",
+      stock: 50,
+      translations: {
+        mr: {
+          name: "कारागीर बकरी चीज",
+          description: "आंबट चव आणि मलईदार पोत असलेले हाताने बनवलेले बकरी चीज. सॅलड आणि चीज बोर्डसाठी योग्य."
+        }
+      }
+    },
+    {
+      id: "3",
+      name: "Sheep's Milk Yogurt",
+      price: 5.0,
+      description: "Thick and creamy yogurt made from sheep's milk. A great source of protein and probiotics.",
+      imageUrl: "https://placehold.co/600x400.png",
+      aiHint: "yogurt",
+      type: "Yogurt",
+      stock: 75,
+      translations: {
+        mr: {
+          name: "मेंढीच्या दुधाचे दही",
+          description: "मेंढीच्या दुधापासून बनवलेले घट्ट आणि मलईदार दही. प्रथिने आणि प्रोबायोटिक्सचा उत्तम स्रोत."
+        }
+      }
+    },
+    {
+      id: "4",
+      name: "Buffalo Milk Butter",
+      price: 6.5,
+      description: "Rich and flavorful butter made from fresh buffalo milk. Ideal for cooking and baking.",
+      imageUrl: "https://placehold.co/600x400.png",
+      aiHint: "butter",
+      type: "Butter",
+      stock: 80,
+      translations: {
+        mr: {
+          name: "म्हशीच्या दुधाचे लोणी",
+          description: "ताज्या म्हशीच्या दुधापासून बनवलेले समृद्ध आणि चवदार लोणी. स्वयंपाक आणि बेकिंगसाठी आदर्श."
+        }
+      }
+    }
+];
 
 export const getProducts = async (): Promise<Product[]> => {
-  const productsCol = collection(db, 'products');
-  const productSnapshot = await getDocs(productsCol);
-  const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-  return productList;
+  // Simulate async call
+  return new Promise(resolve => setTimeout(() => resolve(products), 500));
 };
 
 export const getProductById = async (id: string): Promise<Product | null> => {
-    const productRef = doc(db, 'products', id);
-    const productSnap = await getDoc(productRef);
-    if (productSnap.exists()) {
-        return { id: productSnap.id, ...productSnap.data() } as Product;
-    } else {
-        return null;
-    }
+    const product = products.find(p => p.id === id) || null;
+    return new Promise(resolve => setTimeout(() => resolve(product), 500));
 }
 
 

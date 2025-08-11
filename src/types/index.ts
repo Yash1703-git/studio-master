@@ -35,10 +35,3 @@ export type ProductTranslations = {
     [key: string]: string;
   }
 }
-
-export interface User {
-  uid: string;
-  name: string;
-  email: string | null;
-  role: 'customer' | 'admin';
-}
