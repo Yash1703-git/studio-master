@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const { toast } = useToast();
@@ -43,7 +43,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Admin Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account.
+            Enter your credentials to access the admin dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
@@ -67,6 +67,9 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+             <p className="text-xs text-muted-foreground">
+              Hint: Use password `password123`
+            </p>
           </div>
         </CardContent>
         <CardFooter>
