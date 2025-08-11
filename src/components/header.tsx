@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Globe, Menu } from "lucide-react";
+import { Globe, Menu, Bell } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -19,29 +19,39 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { useLanguage } from "@/context/language-context";
+import { useAuth } from "@/context/auth-context";
 
 const navLinks = [
   { href: "/", labelKey: "home" },
   { href: "/dashboard", labelKey: "dashboard" },
+  { href: "/admin", labelKey: "admin" },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { user, logout } = useAuth();
 
-  const NavLink = ({ href, labelKey }: { href: string; labelKey: string }) => (
-    <Link
-      href={href}
-      className={cn(
-        "text-sm font-medium transition-colors hover:text-primary",
-        pathname === href ? "" : "text-muted-foreground"
-      )}
-      onClick={() => setIsMobileMenuOpen(false)}
-    >
-      {t(labelKey)}
-    </Link>
-  );
+  const NavLink = ({ href, labelKey }: { href: string; labelKey: string }) => {
+    // Hide admin link if not logged in
+    if (labelKey === 'admin' && !user) {
+      return null;
+    }
+    
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          pathname === href ? "" : "text-muted-foreground"
+        )}
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        {t(labelKey)}
+      </Link>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -78,7 +88,11 @@ export function Header() {
           </Sheet>
         </div>
         
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button variant="ghost" size="icon">
+            <Bell className="h-5 w-5" />
+            <span className="sr-only">Notifications</span>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -91,6 +105,13 @@ export function Header() {
               <DropdownMenuItem onClick={() => setLanguage('mr')}>Marathi</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          {user ? (
+            <Button variant="outline" onClick={logout}>Logout</Button>
+          ) : (
+            <Button asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>

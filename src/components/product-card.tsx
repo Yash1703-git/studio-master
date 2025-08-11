@@ -27,9 +27,17 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { t, p } = useLanguage();
   const [quantity, setQuantity] = useState(1);
+  const [customerName, setCustomerName] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleBooking = () => {
+    // In a real app, you would send this data to a server
+    console.log({
+      customerName,
+      productId: product.id,
+      productName: p(product, 'name'),
+      quantity,
+    });
     toast({
       title: t('bookingConfirmedToastTitle'),
       description: t('bookingConfirmedToastDescription', {
@@ -38,6 +46,8 @@ export function ProductCard({ product }: ProductCardProps) {
       }),
     });
     setOpen(false);
+    setCustomerName("");
+    setQuantity(1);
   };
 
   return (
@@ -71,6 +81,18 @@ export function ProductCard({ product }: ProductCardProps) {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  {t('nameLabel')}
+                </Label>
+                <Input
+                  id="name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="col-span-3"
+                  placeholder="Your name"
+                />
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="quantity" className="text-right">
                   {t('quantityLabel')}
