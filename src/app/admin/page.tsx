@@ -147,6 +147,10 @@ export default function AdminPage() {
                 <Label htmlFor="description" className="text-right">{t('descriptionLabel')}</Label>
                 <Textarea id="description" value={currentProduct.description} onChange={(e) => setCurrentProduct({ ...currentProduct, description: e.target.value })} className="col-span-3" />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="imageUrl" className="text-right">Image URL</Label>
+                <Input id="imageUrl" value={currentProduct.imageUrl} onChange={(e) => setCurrentProduct({ ...currentProduct, imageUrl: e.target.value })} className="col-span-3"/>
+              </div>
             </div>
             <DialogFooter>
                <DialogClose asChild>
