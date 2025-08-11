@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Search, Send } from "lucide-react";
 import { useNotifications } from "@/context/notification-context";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
@@ -115,26 +115,30 @@ export default function Home() {
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-             <Card className="flex flex-col justify-center">
-              <CardHeader>
-                <CardTitle>Need something else?</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="customerName">Your Name</Label>
-                  <Input id="customerName" placeholder="Your name" value={requestDetails.name} onChange={(e) => setRequestDetails({ ...requestDetails, name: e.target.value })}/>
-                </div>
-                <div>
-                  <Label htmlFor="requestDetails">Product Request</Label>
-                  <Textarea id="requestDetails" placeholder="Describe the product you need..." value={requestDetails.details} onChange={(e) => setRequestDetails({ ...requestDetails, details: e.target.value })}/>
-                </div>
-                <Button onClick={handleSpecialRequest} className="w-full">
-                  <Send className="mr-2 h-4 w-4" /> Send Request
-                </Button>
-              </CardContent>
-            </Card>
           </>
         )}
+      </div>
+
+      <div className="mt-12">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Need something else?</CardTitle>
+            <CardDescription>If you can't find the product you're looking for, let us know!</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="customerName">Your Name</Label>
+              <Input id="customerName" placeholder="Your name" value={requestDetails.name} onChange={(e) => setRequestDetails({ ...requestDetails, name: e.target.value })}/>
+            </div>
+            <div>
+              <Label htmlFor="requestDetails">Product Request</Label>
+              <Textarea id="requestDetails" placeholder="Describe the product you need..." value={requestDetails.details} onChange={(e) => setRequestDetails({ ...requestDetails, details: e.target.value })}/>
+            </div>
+            <Button onClick={handleSpecialRequest} className="w-full">
+              <Send className="mr-2 h-4 w-4" /> Send Request
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

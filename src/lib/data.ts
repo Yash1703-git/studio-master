@@ -153,7 +153,29 @@ export let customerRequests: CustomerRequest[] = [
   },
 ];
 
-export let specialRequests: SpecialRequest[] = [];
+export let specialRequests: SpecialRequest[] = [
+  {
+    id: 201,
+    customerName: "David's Dairy",
+    requestDetails: "Camel Milk",
+    status: "Pending",
+    date: "2024-07-29"
+  },
+  {
+    id: 202,
+    customerName: "Eva's Creamery",
+    requestDetails: "A2 Ghee (500g jars)",
+    status: "Pending",
+    date: "2024-07-28"
+  },
+  {
+    id: 203,
+    customerName: "Frank's Farm",
+    requestDetails: "Bulk order of unsalted butter",
+    status: "Pending",
+    date: "2024-07-27"
+  }
+];
 
 export const getSpecialRequests = async (): Promise<SpecialRequest[]> => {
   return new Promise(resolve => setTimeout(() => resolve(specialRequests), 100));

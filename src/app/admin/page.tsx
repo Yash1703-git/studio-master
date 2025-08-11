@@ -29,11 +29,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useLanguage } from "@/context/language-context";
-import { getProducts, customerRequests, addProduct, updateProduct, deleteProduct } from "@/lib/data";
-import type { Product, CustomerRequest } from "@/types";
+import { getProducts, customerRequests, addProduct, updateProduct, deleteProduct, getSpecialRequests } from "@/lib/data";
+import type { Product, CustomerRequest, SpecialRequest } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
-import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Package } from "lucide-react";
 
 export default function AdminPage() {
   const { t, p } = useLanguage();
@@ -43,6 +43,7 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [requests] = useState<CustomerRequest[]>(customerRequests);
+  const [specialRequests, setSpecialRequests] = useState<SpecialRequest[]>([]);
 
   // State for Add New Product
   const [newProduct, setNewProduct] = useState({
@@ -56,7 +57,7 @@ export default function AdminPage() {
   });
 
   // State for Update Product Price
-  const [updatePriceData, setUpdatePriceData] = useState({
+  const [updatePriceData, setUpdatePriceData] = useState<{productId: string, newPrice: number | ''}>({
     productId: "",
     newPrice: 0,
   });
@@ -76,8 +77,14 @@ export default function AdminPage() {
     setProducts(productsData);
   };
   
+  const fetchSpecialRequests = async () => {
+    const requestsData = await getSpecialRequests();
+    setSpecialRequests(requestsData);
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchSpecialRequests();
   }, []);
   
   const handleAddNewProduct = async () => {
@@ -100,13 +107,13 @@ export default function AdminPage() {
   };
 
   const handleUpdatePrice = async () => {
-    if (!updatePriceData.productId || updatePriceData.newPrice <= 0) {
+    if (!updatePriceData.productId || (updatePriceData.newPrice !== '' && updatePriceData.newPrice <= 0)) {
       toast({ variant: "destructive", title: "Invalid Data", description: "Please select a product and enter a valid price." });
       return;
     }
     const productToUpdate = products.find(p => p.id === updatePriceData.productId);
     if (productToUpdate) {
-      await updateProduct({ ...productToUpdate, price: updatePriceData.newPrice });
+      await updateProduct({ ...productToUpdate, price: Number(updatePriceData.newPrice) });
       toast({ title: "Price Updated", description: `${productToUpdate.name}'s price has been updated.` });
       await fetchProducts();
       setUpdatePriceData({ productId: "", newPrice: 0 });
@@ -154,7 +161,7 @@ export default function AdminPage() {
               </div>
                <div>
                 <Label htmlFor="price">Price</Label>
-                <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })} />
+                <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value === '' ? 0 : Number(e.target.value) })} />
               </div>
                <div>
                 <Label htmlFor="imageUrl">Image URL</Label>
@@ -187,7 +194,7 @@ export default function AdminPage() {
               </div>
               <div>
                 <Label htmlFor="newPrice">New Price</Label>
-                <Input id="newPrice" type="number" value={updatePriceData.newPrice} onChange={(e) => setUpdatePriceData({ ...updatePriceData, newPrice: Number(e.target.value) })} />
+                <Input id="newPrice" type="number" value={updatePriceData.newPrice} onChange={(e) => setUpdatePriceData({ ...updatePriceData, newPrice: e.target.value === '' ? '' : Number(e.target.value) })} />
               </div>
               <Button onClick={handleUpdatePrice}>
                 <Edit className="mr-2 h-4 w-4" /> Update Price
@@ -246,6 +253,27 @@ export default function AdminPage() {
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+                <CardTitle>Customer Requests</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                {specialRequests.length > 0 ? (
+                    specialRequests.map(request => (
+                        <div key={request.id} className="flex items-center gap-4 p-3 rounded-lg border bg-background">
+                            <Package className="h-6 w-6 text-muted-foreground" />
+                            <div className="flex-grow">
+                                <p className="font-medium">{request.requestDetails}</p>
+                                <p className="text-sm text-muted-foreground">From: {request.customerName}</p>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-muted-foreground text-center py-4">No special requests yet.</p>
+                )}
             </CardContent>
           </Card>
         </div>
