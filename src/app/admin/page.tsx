@@ -36,6 +36,7 @@ import type { Product, CustomerRequest } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function AdminPage() {
   const { t, p } = useLanguage();
@@ -173,7 +174,7 @@ export default function AdminPage() {
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody suppressHydrationWarning>
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{p(product, 'name')}</TableCell>
@@ -211,7 +212,7 @@ export default function AdminPage() {
                 <TableHead>{t('date')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody suppressHydrationWarning>
               {requests.map((request) => (
                 <TableRow key={request.id}>
                   <TableCell>{request.customerName}</TableCell>
