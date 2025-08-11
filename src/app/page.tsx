@@ -6,11 +6,14 @@ import { useLanguage } from "@/context/language-context";
 import type { Product } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getProducts } from "@/lib/data";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, p } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,10 +28,26 @@ export default function Home() {
     };
     fetchProducts();
   }, []);
-  
+
+  const filteredProducts = products.filter((product) =>
+    p(product, 'name').toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold my-8 text-center">{t('ourProducts')}</h1>
+      
+      <div className="relative mb-8 max-w-md mx-auto">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search products..."
+          className="pl-8"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {loading ? (
           Array.from({ length: 8 }).map((_, i) => (
@@ -41,7 +60,7 @@ export default function Home() {
             </div>
           ))
         ) : (
-          products.map((product) => (
+          filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))
         )}
