@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -58,7 +59,7 @@ export default function AdminPage() {
   const [selectedRequest, setSelectedRequest] = useState<CustomerRequest | null>(null);
 
   // State for Add New Product
-  const [newProduct, setNewProduct] = useState({
+  const [newProduct, setNewProduct] = useState<{name: string, price: number | '', description: string, imageUrl: string, aiHint: string, type: string, stock: number | ''}>({
     name: "",
     price: 0,
     description: "",
@@ -113,11 +114,15 @@ export default function AdminPage() {
   }, []);
   
   const handleAddNewProduct = async () => {
-    if (!newProduct.name || !newProduct.description) {
+    if (!newProduct.name || !newProduct.description || !newProduct.stock) {
       toast({ variant: "destructive", title: t('toastMissingFieldsTitle'), description: t('toastMissingFieldsDescription') });
       return;
     }
-    await addProduct(newProduct);
+    await addProduct({
+        ...newProduct,
+        price: Number(newProduct.price),
+        stock: Number(newProduct.stock)
+    });
     toast({ title: t('toastProductAddedTitle'), description: t('toastProductAddedDescription', { productName: newProduct.name }) });
     await fetchProducts();
     setNewProduct({
@@ -193,6 +198,10 @@ export default function AdminPage() {
                 <div>
                   <Label htmlFor="price">{t('priceLabel')}</Label>
                   <Input id="price" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value === '' ? '' : Number(e.target.value) })} />
+                </div>
+                <div>
+                  <Label htmlFor="stock">{t('quantityLabel')}</Label>
+                  <Input id="stock" type="number" value={newProduct.stock} onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value === '' ? '' : Number(e.target.value) })} />
                 </div>
                 <div>
                   <Label htmlFor="imageUrl">{t('imageUrl')}</Label>
@@ -343,5 +352,3 @@ export default function AdminPage() {
     </>
   );
 }
-
-    
