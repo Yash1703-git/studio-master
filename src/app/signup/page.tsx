@@ -10,9 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Logo } from "@/components/logo";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -46,80 +44,79 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-secondary/50 p-4">
-      <Card className="w-full max-w-md">
-         <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-                <Logo />
-            </div>
-          <CardTitle className="font-lexend text-2xl">Create an Account</CardTitle>
-          <CardDescription>Join DairyMix to manage and grow your farm.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <div className="flex flex-col space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Create an account
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Enter your details below to create your account
+          </p>
+        </div>
+        <form onSubmit={handleSignup}>
+          <div className="grid gap-2">
+             <div className="grid gap-1">
+              <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
                 required
-                disabled={loading}
               />
             </div>
-            <div className="space-y-2">
+            <div className="grid gap-1">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                placeholder="name@example.com"
                 type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                disabled={loading}
               />
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="6+ characters"
-                required
-                disabled={loading}
-              />
-            </div>
-            
-            <div className="space-y-3">
-                <Label>I am a...</Label>
-                 <RadioGroup defaultValue="customer" onValueChange={(value) => setRole(value as "customer" | "admin")} className="flex space-x-4">
-                    <div className="flex items-center space-x-2">
+             <div className="grid gap-1">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    id="password"
+                    placeholder="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+             </div>
+             <div className="grid gap-1">
+                <Label>Role</Label>
+                 <RadioGroup defaultValue="customer" onValueChange={(value) => setRole(value as "customer" | "admin")} className="flex space-x-2">
+                    <div className="flex items-center space-x-1">
                         <RadioGroupItem value="customer" id="customer" />
                         <Label htmlFor="customer">Customer</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                         <RadioGroupItem value="admin" id="admin" />
                         <Label htmlFor="admin">Admin</Label>
                     </div>
                 </RadioGroup>
             </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating Account..." : "Sign Up"}
+            <Button disabled={loading}>
+                {loading && <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
+                Sign Up
             </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
-            <Link href="/login" className="underline font-semibold text-primary">
-              Log in
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+        </form>
+        <p className="px-8 text-center text-sm text-muted-foreground">
+          <Link
+            href="/login"
+            className="hover:text-brand underline underline-offset-4"
+          >
+            Already have an account? Sign In
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

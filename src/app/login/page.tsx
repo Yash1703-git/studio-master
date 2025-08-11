@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,54 +32,60 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-secondary/50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-                <Logo />
-            </div>
-          <CardTitle className="font-lexend text-2xl">Welcome Back!</CardTitle>
-          <CardDescription>Enter your email and password to access your account.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <div className="flex flex-col space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Welcome back
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Enter your email to sign in to your account
+          </p>
+        </div>
+        <form onSubmit={handleLogin}>
+          <div className="grid gap-2">
+            <div className="grid gap-1">
+              <Label className="sr-only" htmlFor="email">
+                Email
+              </Label>
               <Input
                 id="email"
+                placeholder="name@example.com"
                 type="email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect="off"
+                disabled={loading}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                disabled={loading}
               />
-            </div>
-             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label className="sr-only" htmlFor="password">
+                Password
+              </Label>
               <Input
                 id="password"
+                placeholder="password"
                 type="password"
+                disabled={loading}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                disabled={loading}
               />
             </div>
-            
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+            <Button disabled={loading}>
+              {loading && <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
+              Sign In
             </Button>
-          </form>
-           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
-            <Link href="/signup" className="underline font-semibold text-primary">
-              Sign up
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+        </form>
+        <p className="px-8 text-center text-sm text-muted-foreground">
+          <Link
+            href="/signup"
+            className="hover:text-brand underline underline-offset-4"
+          >
+            Don&apos;t have an account? Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

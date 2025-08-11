@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lexend } from "next/font/google";
+import { Inter, PT_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Header } from "@/components/header";
@@ -8,14 +8,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/context/language-context";
 import { AuthProvider } from "@/context/auth-context";
 
-const inter = Inter({
+const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-const lexend = Lexend({
+const fontSerif = PT_Sans({
   subsets: ["latin"],
-  variable: "--font-lexend",
+  weight: ["400", "700"],
+  variable: "--font-serif",
 });
 
 
@@ -35,13 +36,13 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          inter.variable,
-          lexend.variable
+          fontSans.variable,
+          fontSerif.variable,
         )}
       >
         <AuthProvider>
           <LanguageProvider>
-            <div className="relative flex min-h-screen flex-col">
+            <div className="relative flex min-h-dvh flex-col">
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />

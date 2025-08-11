@@ -18,7 +18,6 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useLanguage } from "@/context/language-context";
-import { Badge } from "./ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -47,28 +46,27 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-      <CardHeader className="p-0 relative">
-        <Badge className="absolute top-3 right-3">{product.type}</Badge>
-        <div className="aspect-video relative">
+    <Card>
+      <CardHeader>
+        <div className="relative h-48">
           <Image
             src={product.imageUrl}
             alt={p(product, 'name')}
             fill
-            className="object-cover"
+            className="object-cover rounded-t-lg"
             data-ai-hint={product.aiHint}
           />
         </div>
+        <CardTitle className="pt-4">{p(product, 'name')}</CardTitle>
       </CardHeader>
-      <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg font-lexend mb-2">{p(product, 'name')}</CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-2">{p(product, 'description')}</p>
+      <CardContent>
+        <p className="text-sm text-gray-600 h-20 overflow-hidden">{p(product, 'description')}</p>
+        <p className="font-bold text-lg mt-2">${product.price}</p>
       </CardContent>
-      <CardFooter className="p-4 flex justify-between items-center mt-auto bg-secondary/30">
-        <p className="text-xl font-bold font-lexend text-foreground">${product.price.toFixed(2)}</p>
+      <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-             <Button>{t('request')}</Button>
+             <Button className="w-full">{t('request')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

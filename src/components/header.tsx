@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "./ui/dropdown-menu";
-import { Globe, Menu, LogOut, User, LayoutDashboard, UserCircle, LogIn } from "lucide-react";
+import { Globe, Menu, LogOut, User } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 
 const navLinks = [
   { href: "/", labelKey: "home" },
-  { href: "/advisor", labelKey: "advisor" },
+  { href: "/dashboard", labelKey: "dashboard" },
 ];
 
 export function Header() {
@@ -40,7 +40,7 @@ export function Header() {
       href={href}
       className={cn(
         "text-sm font-medium transition-colors hover:text-primary",
-        pathname === href ? "text-primary font-semibold" : "text-muted-foreground"
+        pathname === href ? "" : "text-muted-foreground"
       )}
       onClick={() => setIsMobileMenuOpen(false)}
     >
@@ -51,10 +51,18 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <Link href="/" className="mr-6 flex items-center">
-          <Logo />
-        </Link>
-        
+        <div className="mr-4 hidden md:flex">
+          <Link href="/" className="mr-6 flex items-center">
+            <Logo />
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            {navLinks.map((link) => (
+              <NavLink key={link.href} {...link} />
+            ))}
+            {user?.role === 'admin' && <NavLink href="/admin" labelKey="admin" />}
+          </nav>
+        </div>
+
         <div className="md:hidden">
            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -64,27 +72,20 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
-              <div className="p-4">
-                <Link href="/" className="mb-8 block" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Logo />
-                </Link>
-                <nav className="flex flex-col gap-4">
-                  {navLinks.map((link) => (
-                    <NavLink key={link.href} {...link} />
-                  ))}
-                </nav>
-              </div>
+               <Link href="/" className="mr-6 flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
+                <Logo />
+              </Link>
+              <nav className="grid gap-6 text-lg font-medium mt-6">
+                 {navLinks.map((link) => (
+                  <NavLink key={link.href} {...link} />
+                ))}
+                {user?.role === 'admin' && <NavLink href="/admin" labelKey="admin" />}
+              </nav>
             </SheetContent>
           </Sheet>
         </div>
         
-        <nav className="mr-auto hidden items-center space-x-6 text-sm font-medium md:flex">
-          {navLinks.map((link) => (
-            <NavLink key={link.href} {...link} />
-          ))}
-        </nav>
-
-        <div className="flex flex-1 items-center justify-end space-x-2">
+        <div className="flex flex-1 items-center justify-end space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -102,30 +103,13 @@ export function Header() {
             user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                     <UserCircle className="h-6 w-6" />
+                  <Button variant="secondary" size="icon" className="rounded-full">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Toggle user menu</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem disabled>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {user.role === 'admin' && (
-                    <DropdownMenuItem onClick={() => router.push('/admin')}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Admin Dashboard</span>
-                    </DropdownMenuItem>
-                  )}
-                   <DropdownMenuItem onClick={() => router.push('/dashboard')}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>{t('dashboard')}</span>
-                    </DropdownMenuItem>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -135,10 +119,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Button asChild>
-                <Link href="/login">
-                  <LogIn className="mr-2 h-4 w-4"/>
-                  Login
-                </Link>
+                <Link href="/login">Login</Link>
               </Button>
             )
           )}
