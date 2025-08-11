@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useLanguage } from "@/context/language-context";
-import { getProducts, customerRequests, addProduct, updateProduct, deleteProduct, getSpecialRequests } from "@/lib/data";
+import { getProducts, getCustomerRequests, addProduct, updateProduct, deleteProduct, getSpecialRequests } from "@/lib/data";
 import type { Product, CustomerRequest, SpecialRequest } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
@@ -42,7 +42,7 @@ export default function AdminPage() {
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [requests] = useState<CustomerRequest[]>(customerRequests);
+  const [requests, setRequests] = useState<CustomerRequest[]>([]);
   const [specialRequests, setSpecialRequests] = useState<SpecialRequest[]>([]);
 
   // State for Add New Product
@@ -76,6 +76,11 @@ export default function AdminPage() {
     const productsData = await getProducts();
     setProducts(productsData);
   };
+
+  const fetchCustomerRequests = async () => {
+    const requestsData = await getCustomerRequests();
+    setRequests(requestsData);
+  }
   
   const fetchSpecialRequests = async () => {
     const requestsData = await getSpecialRequests();
@@ -84,7 +89,15 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchProducts();
+    fetchCustomerRequests();
     fetchSpecialRequests();
+
+    const intervalId = setInterval(() => {
+      fetchCustomerRequests();
+      fetchSpecialRequests();
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
   
   const handleAddNewProduct = async () => {
@@ -240,6 +253,7 @@ export default function AdminPage() {
                   <TableRow>
                     <TableHead>Customer</TableHead>
                     <TableHead>Product</TableHead>
+                    <TableHead>Delivery</TableHead>
                     <TableHead className="text-right">Quantity</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -248,6 +262,7 @@ export default function AdminPage() {
                     <TableRow key={request.id}>
                       <TableCell>{request.customerName}</TableCell>
                       <TableCell>{p(request, 'productName')}</TableCell>
+                      <TableCell>{request.deliveryType}</TableCell>
                       <TableCell className="text-right">{request.quantity}</TableCell>
                     </TableRow>
                   ))}

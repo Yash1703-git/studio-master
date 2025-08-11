@@ -106,6 +106,8 @@ export let customerRequests: CustomerRequest[] = [
     quantity: 50,
     status: "Fulfilled",
     date: "2024-07-28",
+    deliveryType: "Home Delivery",
+    address: "123 Green Valley, Farmville",
     translations: {
       mr: {
         productName: "सेंद्रिय गायीचे दूध"
@@ -119,6 +121,7 @@ export let customerRequests: CustomerRequest[] = [
     quantity: 20,
     status: "Pending",
     date: "2024-07-27",
+    deliveryType: "Store Pickup",
      translations: {
       mr: {
         productName: "कारागीर बकरी चीज"
@@ -132,6 +135,7 @@ export let customerRequests: CustomerRequest[] = [
     quantity: 30,
     status: "Fulfilled",
     date: "2024-07-26",
+    deliveryType: "Store Pickup",
     translations: {
       mr: {
         productName: "मेंढीच्या दुधाचे दही"
@@ -145,6 +149,8 @@ export let customerRequests: CustomerRequest[] = [
     quantity: 15,
     status: "Pending",
     date: "2024-07-25",
+    deliveryType: "Home Delivery",
+    address: "123 Green Valley, Farmville",
     translations: {
       mr: {
         productName: "म्हशीच्या दुधाचे लोणी"
@@ -152,6 +158,22 @@ export let customerRequests: CustomerRequest[] = [
     }
   },
 ];
+
+export const getCustomerRequests = async (): Promise<CustomerRequest[]> => {
+    return new Promise(resolve => setTimeout(() => resolve(customerRequests), 100));
+}
+
+export const addCustomerRequest = async (request: Omit<CustomerRequest, 'id' | 'status' | 'date' | 'translations'>): Promise<CustomerRequest> => {
+  const newRequest: CustomerRequest = {
+    ...request,
+    id: Date.now(),
+    status: "Pending",
+    date: new Date().toISOString().split("T")[0],
+    translations: {}
+  };
+  customerRequests.unshift(newRequest);
+  return new Promise(resolve => setTimeout(() => resolve(newRequest), 100));
+}
 
 export let specialRequests: SpecialRequest[] = [
   {

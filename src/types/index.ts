@@ -23,6 +23,8 @@ export interface CustomerRequest {
   quantity: number;
   status: "Pending" | "Fulfilled" | "Cancelled";
   date: string;
+  deliveryType: "Store Pickup" | "Home Delivery";
+  address?: string;
   translations: {
     [key: string]: {
       productName: string;

@@ -27,6 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "./ui/textarea";
+import { addCustomerRequest } from "@/lib/data";
+import { useNotifications } from "@/context/notification-context";
 
 interface ProductCardProps {
   product: Product;
@@ -35,13 +37,23 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { t, p } = useLanguage();
+  const { addAdminNotification } = useNotifications();
   const [quantity, setQuantity] = useState<number | ''>(1);
   const [customerName, setCustomerName] = useState("");
   const [deliveryOption, setDeliveryOption] = useState("store");
   const [address, setAddress] = useState("");
   const [open, setOpen] = useState(false);
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
+    if (!customerName || !quantity) {
+      toast({
+        variant: "destructive",
+        title: "Missing Fields",
+        description: "Please enter your name and a valid quantity.",
+      });
+      return;
+    }
+
     if (deliveryOption === 'home' && !address.trim()) {
       toast({
         variant: "destructive",
@@ -50,15 +62,17 @@ export function ProductCard({ product }: ProductCardProps) {
       });
       return;
     }
-    // In a real app, you would send this data to a server
-    console.log({
+
+    await addCustomerRequest({
       customerName,
-      productId: product.id,
-      productName: p(product, 'name'),
-      quantity,
-      deliveryOption,
-      address: deliveryOption === 'home' ? address : null,
+      productName: product.name,
+      quantity: Number(quantity),
+      deliveryType: deliveryOption === 'home' ? "Home Delivery" : "Store Pickup",
+      address: deliveryOption === 'home' ? address : undefined,
     });
+    
+    addAdminNotification();
+
     toast({
       title: t('bookingConfirmedToastTitle'),
       description: t('bookingConfirmedToastDescription', {
@@ -66,6 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
         productName: p(product, 'name'),
       }),
     });
+
     setOpen(false);
     setCustomerName("");
     setQuantity(1);
