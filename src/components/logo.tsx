@@ -1,23 +1,57 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <svg
+       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-8 w-8 text-primary"
-      >
-        <path d="M18.5 6.5C18.5 8.43 17.09 10 15.5 10C13.91 10 12.5 8.43 12.5 6.5C12.5 4.57 13.91 3 15.5 3C17.09 3 18.5 4.57 18.5 6.5Z" />
-        <path d="M8.5 6.5C8.5 8.43 7.09 10 5.5 10C3.91 10 2.5 8.43 2.5 6.5C2.5 4.57 3.91 3 5.5 3C7.09 3 8.5 4.57 8.5 6.5Z" />
-        <path d="M12 16C12 14.8954 12.8954 14 14 14H15C15.5523 14 16 14.4477 16 15V15C16 15.5523 15.5523 16 15 16H14C12.8954 16 12 15.1046 12 14" />
-        <path d="M21 12.2C21 15.42 21 17.03 20.21 18.22C19.53 19.25 18.58 19.95 17.5 20.37C16.22 20.85 14.73 21 12 21C9.27 21 7.78 20.85 6.5 20.37C5.42 19.95 4.47 19.25 3.79 18.22C3 17.03 3 15.42 3 12.2C3 9.42 3.32 8.01 4.12 6.94C4.19 6.84 4.26 6.75 4.34 6.66" />
-      </svg>
+        viewBox="0 0 256 256"
+        className="h-10 w-10"
+       >
+        <circle cx="128" cy="128" r="120" fill="#799EFF" stroke="#2D4F2B" strokeWidth="8" />
+        <path 
+          d="M60,110 C40,90 40,50 70,50 C90,50 100,70 100,90"
+          fill="white"
+          stroke="#2D4F2B"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+         <path 
+          d="M196,110 C216,90 216,50 186,50 C166,50 156,70 156,90"
+          fill="white"
+          stroke="#2D4F2B"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <path 
+          d="M80,130 Q128,100 176,130 C 190,190 128,230 128,230 C 128,230 66,190 80,130 Z"
+          fill="#FDBA74"
+          stroke="#2D4F2B"
+          strokeWidth="8"
+        />
+        <ellipse cx="100" cy="140" rx="10" ry="12" fill="black" />
+        <ellipse cx="156" cy="140" rx="10" ry="12" fill="black" />
+        <path 
+          d="M110,180 Q128,190 146,180"
+          stroke="#2D4F2B"
+          strokeWidth="6"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path 
+          d="M110,115 Q128,110 146,115"
+          fill="#FDBA74"
+          stroke="#2D4F2B"
+          strokeWidth="6"
+        />
+        <path d="M110 115 C 105 100, 115 90, 128 90 C 141 90, 151 100, 146 115"
+          fill="#FDBA74"
+          stroke="#2D4F2B"
+          strokeWidth="0"
+        />
+       </svg>
       <span className="text-xl font-bold">Kanhaiya pashukhadya</span>
     </div>
   );
