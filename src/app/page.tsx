@@ -93,7 +93,7 @@ export default function Home() {
         <Input
           type="search"
           placeholder={t('searchProductsPlaceholder')}
-          className="pl-8"
+          className="pl-8 focus-visible:ring-primary focus-visible:border-primary"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -143,5 +143,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

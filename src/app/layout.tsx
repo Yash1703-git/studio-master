@@ -22,7 +22,7 @@ const fontSerif = PT_Sans({
 
 
 export const metadata: Metadata = {
-  title: "DairyMix",
+  title: "Kanhaiya pashukhadya",
   description:
     "AI-powered dairy product mixture recommendations and management.",
 };
