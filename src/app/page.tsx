@@ -93,7 +93,7 @@ export default function Home() {
         <Input
           type="search"
           placeholder={t('searchProductsPlaceholder')}
-          className="pl-8 focus-visible:ring-primary focus-visible:border-primary"
+          className="pl-8 border-primary focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

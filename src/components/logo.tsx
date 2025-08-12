@@ -10,7 +10,6 @@ export function Logo({ className }: { className?: string }) {
         viewBox="0 0 256 256"
         className="h-10 w-10"
        >
-        <circle cx="128" cy="128" r="120" fill="#799EFF" stroke="#2D4F2B" strokeWidth="8" />
         <path 
           d="M60,110 C40,90 40,50 70,50 C90,50 100,70 100,90"
           fill="white"
